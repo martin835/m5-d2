@@ -18,7 +18,22 @@ const articlesRouter = express.Router();
 //1
 articlesRouter.post("/", (request, response) => {
   console.log(request.body);
-  const newArticle = { ...request.body, createdAt: new Date(), id: uniqid() };
+  const newArticle = {
+    ...request.body,
+    createdAt: new Date(),
+    _id: uniqid(),
+    cover:
+      "https://i.insider.com/54856397eab8ea594db17e23?width=1136&format=jpeg",
+    readTime: {
+      value: 1,
+      unit: "minute",
+    },
+    author: {
+      name: "Martin Konečný",
+      avatar:
+        "https://365psd.com/images/previews/880/punk-is-not-dead-vector-graphics-eps-58962.jpg",
+    },
+  };
   console.log(newArticle);
 
   const articlesArray = JSON.parse(fs.readFileSync(articlesJSONPath));
