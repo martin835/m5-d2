@@ -3,7 +3,7 @@ import fs from "fs"
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
 import uniqid from "uniqid"
-import { networkInterfaces } from "os";
+
 
 console.log(import.meta.url);
 console.log(fileURLToPath(import.meta.url));
@@ -56,8 +56,8 @@ authorsRouter.get("/", (request, response) => {
 authorsRouter.put("/:authorId", (request, response) => {
 
     const authorsArray = JSON.parse(fs.readFileSync(authorsJSONPath));
-    const index = authorsArray.findIndex(author => author.id === request.params.authorId)
 
+    const index = authorsArray.findIndex(author => author.id === request.params.authorId);
     const oldAuthor = authorsArray[index];
     const updatedAuthor = {...oldAuthor, ...request.body, updatedAt: new Date()}
 
