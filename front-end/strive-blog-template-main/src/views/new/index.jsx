@@ -39,7 +39,7 @@ export default class NewBlogPost extends Component {
           article: {
             content: "",
             title: "",
-            category: ""
+            category: null
           },
         });
       } else {

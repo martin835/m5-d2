@@ -3,6 +3,9 @@ import fs from "fs";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
 import uniqid from "uniqid";
+import { validationResult } from "express-validator";
+import { newArticleValidation } from "./validation.js";
+import createHttpError from "http-errors";
 
 console.log(import.meta.url);
 console.log(fileURLToPath(import.meta.url));
@@ -16,33 +19,50 @@ console.log(articlesJSONPath);
 
 const articlesRouter = express.Router();
 //1
-articlesRouter.post("/", (request, response) => {
-  console.log(request.body);
-  const newArticle = {
-    ...request.body,
-    createdAt: new Date(),
-    _id: uniqid(),
-    cover:
-      "https://i.insider.com/54856397eab8ea594db17e23?width=1136&format=jpeg",
-    readTime: {
-      value: 1,
-      unit: "minute",
-    },
-    author: {
-      name: "Martin Konečný",
-      avatar:
-        "https://365psd.com/images/previews/880/punk-is-not-dead-vector-graphics-eps-58962.jpg",
-    },
-  };
-  console.log(newArticle);
+articlesRouter.post("/", newArticleValidation, (request, response, next) => {
+     try {
+         console.log(request.body)
+       const errorsList = validationResult(request);
+       if (errorsList.isEmpty()) {
+           console.log(request.body);
+           const newArticle = {
+             ...request.body,
+             createdAt: new Date(),
+             _id: uniqid(),
+             cover:
+               "https://i.insider.com/54856397eab8ea594db17e23?width=1136&format=jpeg",
+             readTime: {
+               value: 1,
+               unit: "minute",
+             },
+             author: {
+               name: "Martin Konečný",
+               avatar:
+                 "https://365psd.com/images/previews/880/punk-is-not-dead-vector-graphics-eps-58962.jpg",
+             },
+           };
+           console.log(newArticle);
 
-  const articlesArray = JSON.parse(fs.readFileSync(articlesJSONPath));
+           const articlesArray = JSON.parse(fs.readFileSync(articlesJSONPath));
 
-  articlesArray.push(newArticle);
+           articlesArray.push(newArticle);
 
-  fs.writeFileSync(articlesJSONPath, JSON.stringify(articlesArray));
+           fs.writeFileSync(articlesJSONPath, JSON.stringify(articlesArray));
 
-  response.status(201).send({ id: newArticle.id });
+           response.status(201).send({ _id: newArticle._id });
+         
+         
+       } else {
+         next(
+           createHttpError(400, "Some errors occurred in req body", {
+             errorsList,
+           })
+         );
+       }
+     } catch (error) {
+       next(error);
+     }
+  
 });
 
 //2
