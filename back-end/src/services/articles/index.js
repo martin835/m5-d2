@@ -20,48 +20,53 @@ const articlesJSONPath = join(parentFolderPath, "articles.json");
 
 const articlesRouter = express.Router();
 //1
-articlesRouter.post("/", newArticleValidation, (request, response, next) => {
-  try {
-    console.log(request.body);
-    const errorsList = validationResult(request);
-    if (errorsList.isEmpty()) {
+articlesRouter.post(
+  "/",
+  newArticleValidation,
+  async (request, response, next) => {
+    try {
       console.log(request.body);
-      const newArticle = {
-        ...request.body,
-        createdAt: new Date(),
-        _id: uniqid(),
-        cover:
-          "https://i.insider.com/54856397eab8ea594db17e23?width=1136&format=jpeg",
-        readTime: {
-          value: 1,
-          unit: "minute",
-        },
-        author: {
-          name: "Martin Konečný",
-          avatar:
-            "https://365psd.com/images/previews/880/punk-is-not-dead-vector-graphics-eps-58962.jpg",
-        },
-      };
-      console.log(newArticle);
-
-      const articlesArray = JSON.parse(fs.readFileSync(articlesJSONPath));
+      const errorsList = validationResult(request);
+      if (errorsList.isEmpty()) {
+        console.log(request.body);
+        const newArticle = {
+          ...request.body,
+          createdAt: new Date(),
+          _id: uniqid(),
+          cover:
+            "https://i.insider.com/54856397eab8ea594db17e23?width=1136&format=jpeg",
+          readTime: {
+            value: 1,
+            unit: "minute",
+          },
+          author: {
+            name: "Martin Konečný",
+            avatar:
+              "https://365psd.com/images/previews/880/punk-is-not-dead-vector-graphics-eps-58962.jpg",
+          },
+        };
+        const articlesArray = await getArticles();
+        articlesArray.push(newArticle);
+        await writeArticles(articlesArray);
+        /*       const articlesArray = JSON.parse(fs.readFileSync(articlesJSONPath));
 
       articlesArray.push(newArticle);
 
       fs.writeFileSync(articlesJSONPath, JSON.stringify(articlesArray));
-
-      response.status(201).send({ _id: newArticle._id });
-    } else {
-      next(
-        createHttpError(400, "Some errors occurred in req body", {
-          errorsList,
-        })
-      );
+    */
+        response.status(201).send({ _id: newArticle._id });
+      } else {
+        next(
+          createHttpError(400, "Some errors occurred in req body", {
+            errorsList,
+          })
+        );
+      }
+    } catch (error) {
+      next(error);
     }
-  } catch (error) {
-    next(error);
   }
-});
+);
 
 //2
 articlesRouter.get("/", async (request, response) => {
@@ -84,23 +89,23 @@ articlesRouter.get("/", async (request, response) => {
 });
 
 //3
-articlesRouter.get("/:articleId", (request, response) => {
+articlesRouter.get("/:articleId", async (request, response) => {
   console.log(request.params.articleId);
-  const articlesArray = JSON.parse(fs.readFileSync(articlesJSONPath));
+  const articlesArray = await getArticles();
 
   const foundarticle = articlesArray.find(
-    (article) => article.id === request.params.articleId
+    (article) => article._id === request.params.articleId
   );
 
   response.send(foundarticle);
 });
 
 //4
-articlesRouter.put("/:articleId", (request, response) => {
-  const articlesArray = JSON.parse(fs.readFileSync(articlesJSONPath));
+articlesRouter.put("/:articleId", async (request, response) => {
+  const articlesArray = await getArticles();
 
   const index = articlesArray.findIndex(
-    (article) => article.id === request.params.articleId
+    (article) => article._id === request.params.articleId
   );
   const oldarticle = articlesArray[index];
   const updatedarticle = {
@@ -111,19 +116,19 @@ articlesRouter.put("/:articleId", (request, response) => {
 
   articlesArray[index] = updatedarticle;
 
-  fs.writeFileSync(articlesJSONPath, JSON.stringify(articlesArray));
+  await writeArticles(articlesArray);
 
   response.send(updatedarticle);
 });
 
 //5
-articlesRouter.delete("/:articleId", (request, response) => {
-  const articlesArray = JSON.parse(fs.readFileSync(articlesJSONPath));
+articlesRouter.delete("/:articleId", async (request, response) => {
+  const articlesArray = await getArticles();
   const remainingarticles = articlesArray.filter(
-    (article) => article.id !== request.params.articleId
+    (article) => article._id !== request.params.articleId
   );
 
-  fs.writeFileSync(articlesJSONPath, JSON.stringify(remainingarticles));
+  await writeArticles(remainingarticles);
 
   response.status(204).send();
 });
