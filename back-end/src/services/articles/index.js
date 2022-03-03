@@ -144,7 +144,7 @@ articlesRouter.patch(
     /* req.file.originalname.slice(req.file.originalname.indexOf(".") */
     try {
       console.log("FILE: ", req.file);
-      await saveCoversPictures(req.params.articleId + ".gif", req.file.buffer);
+      await saveCoversPictures(req.params.articleId + ".jpg", req.file.buffer);
       res.send({ message: "file uploaded" });
     } catch (error) {
       next(error);
@@ -158,10 +158,9 @@ articlesRouter.patch(
     const oldarticle = articlesArray[index];
 
     const coversPublicFolderPath = join(process.cwd(), "./public/img/covers");
-    const coverPath = join(
-      coversPublicFolderPath,
-      req.params.articleId + ".gif"
-    );
+
+    const coverPath =
+      "http://localhost:3001/img/covers/" + req.params.articleId + ".jpg";
 
     const updatedarticle = {
       ...oldarticle,

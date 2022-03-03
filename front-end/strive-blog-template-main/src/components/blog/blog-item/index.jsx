@@ -38,6 +38,7 @@ const BlogItem = (props, { profiles }) => {
 
   return (
     <>
+      {console.log({ cover })}
       <Card className="blog-card">
         <Link to={`/blog/${_id}`} className="blog-link">
           <Card.Img variant="top" src={cover} className="blog-cover" />
@@ -52,7 +53,6 @@ const BlogItem = (props, { profiles }) => {
           </Button>
         </Card.Footer>
       </Card>
-
       <Modal
         size="lg"
         show={lgShow}
