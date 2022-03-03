@@ -7,6 +7,8 @@ import { validationResult } from "express-validator";
 import { newArticleValidation } from "./validation.js";
 import createHttpError from "http-errors";
 import { getArticles, writeArticles } from "../../lib/fs-tools.js";
+import multer from "multer";
+import { saveCoversPictures } from "../../lib/fs-tools.js";
 
 /* console.log(import.meta.url);
 console.log(fileURLToPath(import.meta.url)); */
@@ -132,5 +134,22 @@ articlesRouter.delete("/:articleId", async (request, response) => {
 
   response.status(204).send();
 });
+
+//6
+/* req.file.originalname.slice(req.file.originalname.indexOf(".") */
+
+articlesRouter.patch(
+  "/:articleId/cover",
+  multer().single("cover"),
+  async (req, res, next) => {
+    try {
+      console.log("FILE: ", req.file);
+      await saveCoversPictures(req.params.articleId + ".gif", req.file.buffer);
+      res.send();
+    } catch (error) {
+      next(error);
+    }
+  }
+);
 
 export default articlesRouter;
