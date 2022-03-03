@@ -70,7 +70,16 @@ articlesRouter.get("/", (request, response) => {
   const fileContent = fs.readFileSync(articlesJSONPath);
   console.log(JSON.parse(fileContent));
   const articlesArray = JSON.parse(fileContent);
-  response.send(articlesArray);
+
+    if (request.query && request.query.category) {
+        const filteredArticles = articlesArray.filter(article => article.category === request.query.category)
+        response.send(filteredArticles)
+    } else {
+        response.send(articlesArray)
+    }
+
+
+  /* response.send(articlesArray); */
 });
 
 //3
