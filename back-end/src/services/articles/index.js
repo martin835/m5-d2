@@ -149,6 +149,29 @@ articlesRouter.patch(
     } catch (error) {
       next(error);
     }
+
+    const articlesArray = await getArticles();
+
+    const index = articlesArray.findIndex(
+      (article) => article._id === req.params.articleId
+    );
+    const oldarticle = articlesArray[index];
+
+    const coversPublicFolderPath = join(process.cwd(), "./public/img/covers");
+    const coverPath = join(
+      coversPublicFolderPath,
+      req.params.articleId + ".gif"
+    );
+
+    const updatedarticle = {
+      ...oldarticle,
+      cover: coverPath,
+      updatedAt: new Date(),
+    };
+
+    articlesArray[index] = updatedarticle;
+
+    await writeArticles(articlesArray);
   }
 );
 
