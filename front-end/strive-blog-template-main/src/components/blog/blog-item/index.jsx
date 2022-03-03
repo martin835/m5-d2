@@ -9,6 +9,33 @@ const BlogItem = (props, { profiles }) => {
   const { title, cover, author, _id } = props;
   const [lgShow, setLgShow] = useState(false);
 
+  const uploadArticleCover = async (e) => {
+    e.preventDefault();
+    console.log(_id);
+    const inpFile = document.getElementById("cover-image");
+    const formData = new FormData();
+    formData.append("cover", inpFile.files[0]);
+    console.log(inpFile.files[0]);
+
+    try {
+      let response = await fetch(
+        "http://localhost:3001/articles/" + _id + "/cover",
+        {
+          method: "PATCH",
+          body: formData,
+        }
+      );
+      if (response.ok) {
+        let data = await response.json();
+        console.log(data);
+      } else {
+        alert("something went wrong :(");
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <>
       <Card className="blog-card">
@@ -41,7 +68,9 @@ const BlogItem = (props, { profiles }) => {
             <Form.Control type="file" placeholder="Select an image" />
           </Form.Group>
           <Modal.Footer>
-            <Button variant="primary">Submit</Button>
+            <Button variant="primary" onClick={(e) => uploadArticleCover(e)}>
+              Submit
+            </Button>
           </Modal.Footer>
         </Modal.Body>
       </Modal>

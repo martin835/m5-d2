@@ -136,16 +136,16 @@ articlesRouter.delete("/:articleId", async (request, response) => {
 });
 
 //6
-/* req.file.originalname.slice(req.file.originalname.indexOf(".") */
 
 articlesRouter.patch(
   "/:articleId/cover",
   multer().single("cover"),
   async (req, res, next) => {
+    /* req.file.originalname.slice(req.file.originalname.indexOf(".") */
     try {
       console.log("FILE: ", req.file);
       await saveCoversPictures(req.params.articleId + ".gif", req.file.buffer);
-      res.send();
+      res.send({ message: "file uploaded" });
     } catch (error) {
       next(error);
     }
