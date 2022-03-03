@@ -1,6 +1,6 @@
-import express from "express"
-import listEndpoints from "express-list-endpoints"
-import authorsRouter from  "./services/authors/index.js"
+import express from "express";
+import listEndpoints from "express-list-endpoints";
+import authorsRouter from "./services/authors/index.js";
 import articlesRouter from "./services/articles/index.js";
 import cors from "cors";
 import {
@@ -10,19 +10,18 @@ import {
   genericErrorHandler,
 } from "./errorHandlers.js";
 
-const server = express()
+console.log(process.cwd());
 
-const port = 3001
+const server = express();
+const port = 3001;
 // *********************************** MIDDLEWARES ***********************************
 
-server.use(cors())
-server.use(express.json())
-
+server.use(cors());
+server.use(express.json());
 
 // *********************************** ENDPOINTS *************************************
-server.use("/authors", authorsRouter)
+server.use("/authors", authorsRouter);
 server.use("/articles", articlesRouter);
-
 
 // ********************************** ERROR HANDLERS *********************************
 
@@ -30,10 +29,6 @@ server.use(badRequestHandler);
 server.use(unauthorizedHandler);
 server.use(notFoundHandler);
 server.use(genericErrorHandler);
-
-
-
-
 
 console.table(listEndpoints(server));
 

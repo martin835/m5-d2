@@ -10,20 +10,20 @@ export default class NewBlogPost extends Component {
       article: {
         content: "",
         title: "",
-        category: ""
+        category: "",
       },
     };
     /* this.handleChange = this.handleChange.bind(this); */
-    this.handleSubmit = this.handleSubmit.bind(this);
+    this.createNewArticle = this.createNewArticle.bind(this);
   }
 
   /* handleChange(value) {
     this.setState({ content: value });
   } */
 
-  handleSubmit = async (e) => {
+  createNewArticle = async (e) => {
     e.preventDefault();
-    
+
     try {
       let response = await fetch("http://localhost:3001/articles", {
         method: "POST",
@@ -39,7 +39,7 @@ export default class NewBlogPost extends Component {
           article: {
             content: "",
             title: "",
-            category: null
+            category: null,
           },
         });
       } else {
@@ -64,7 +64,7 @@ export default class NewBlogPost extends Component {
   render() {
     return (
       <Container className="new-blog-container">
-        <Form onSubmit={(e) => this.handleSubmit(e)} className="mt-5">
+        <Form onSubmit={(e) => this.createNewArticle(e)} className="mt-5">
           <Form.Group controlId="blog-form" className="mt-3">
             <Form.Label>Title</Form.Label>
             <Form.Control
